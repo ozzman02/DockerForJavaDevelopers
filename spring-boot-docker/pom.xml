@@ -22,7 +22,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
         <!--set this to your docker acct name-->
-        <docker.image.prefix>springframeworkguru</docker.image.prefix>
+        <docker.image.prefix>osantamaria</docker.image.prefix>
         <!--Set to name of project-->
         <docker.image.name>springbootdocker</docker.image.name>
     </properties>
@@ -61,14 +61,15 @@
                 <artifactId>docker-maven-plugin</artifactId>
                 <version>0.20.0</version>
                 <configuration>
-                    <dockerHost>http://127.0.0.1:2375</dockerHost>
-                    <!--<dockerHost>unix:///var/run/docker.sock</dockerHost>-->
+                    <dockerHost>unix:///var/run/docker.sock</dockerHost>
                     <verbose>true</verbose>
                     <images>
                         <image>
                             <name>${docker.image.prefix}/${docker.image.name}</name>
                             <build>
-                                <dockerFileDir>${project.basedir}/src/main/docker/</dockerFileDir>
+                                <!-- Changing dockerfile dir since we are using template -->
+                                <!--<dockerFileDir>${project.basedir}/src/main/docker/</dockerFileDir>-->
+                                <dockerFileDir>${project.basedir}/target/dockerfile/</dockerFileDir>
                                 <!--copies artifact to docker build dir in target-->
                                 <assembly>
                                     <descriptorRef>artifact</descriptorRef>
@@ -81,6 +82,33 @@
                         </image>
                     </images>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.gmavenplus</groupId>
+                <artifactId>gmavenplus-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <scripts>
+                        <script>file:///${project.basedir}/src/main/scripts/BuildDockerfile.groovy</script>
+                    </scripts>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.codehaus.groovy</groupId>
+                        <artifactId>groovy-all</artifactId>
+                        <!-- any version of Groovy \>= 1.5.0 should work here -->
+                        <version>2.4.8</version>
+                        <scope>runtime</scope>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
