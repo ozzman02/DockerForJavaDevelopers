@@ -41,7 +41,7 @@ public class IndexController {
         pageViewEvent.setPageViewDate(new Date());
         pageViewEvent.setCorrelationId(UUID.randomUUID().toString());
 
-        log.info("Sending Message to pagie view service");
+        log.info("Sending Message to page view service");
         pageViewService.sendPageViewEvent(pageViewEvent);
 
         return "index";
